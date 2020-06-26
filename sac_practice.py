@@ -250,6 +250,8 @@ def main():
                 }, model_save)                
 
 def play():
+    pass
+    '''
     if args.load_trained_model == None:
         print("* * * * * Enter a model score * * * * *")
         quit()
@@ -290,6 +292,7 @@ def play():
 
             if done:                  
                 print('step : {0} | score : {1} | time : {2} s'.format(step, episode_reward, time.time()-start_time))            
+        '''
 
 if __name__ == '__main__':
     torch.manual_seed(0)
