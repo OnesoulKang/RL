@@ -36,7 +36,7 @@ writer = SummaryWriter(current_path+'/logdir/SAC')
 
 gamma = 0.99
 lr = 0.0003
-alpha = 0.01
+alpha = 1.0
 tau = 0.005
 
 class ReplayBuffer:
@@ -80,7 +80,7 @@ class QNetwork(nn.Module):
         return x
 
 class PolicyNetwork(nn.Module):
-    def __init__(self, num_inputs, num_actions, hidden_size, init_w=1e-3, log_std_min=-5, log_std_max=0.01):
+    def __init__(self, num_inputs, num_actions, hidden_size, init_w=1e-3, log_std_min=-20, log_std_max=2):
         super(PolicyNetwork, self).__init__()
 
         self.log_std_min = log_std_min
@@ -175,6 +175,7 @@ def update(data, q1, q1_optim, q2, q2_optim, q1_target, q2_target, policy, polic
     loss_pi = (alpha * logp_pi - q_pi).mean()
     writer.add_scalar('loss/pi', loss_pi, total_step)
 
+    print('loss q1 {0} | q2 {1} | pi {2}'.format(loss_q1, loss_q2, loss_pi))
     policy_optim.zero_grad()
     loss_pi.backward()
     policy_optim.step()    
