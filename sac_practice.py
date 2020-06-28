@@ -10,6 +10,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
+
 from torch.distributions import Normal
 from torch.utils.tensorboard import SummaryWriter
 
@@ -36,7 +38,7 @@ writer = SummaryWriter(current_path+'/logdir/SAC')
 
 gamma = 0.99
 lr = 0.0003
-alpha = 1.0
+alpha = 0.5
 tau = 0.005
 
 class ReplayBuffer:
@@ -103,8 +105,8 @@ class PolicyNetwork(nn.Module):
         #mean = torch.relu(self.mean_linear(x))
         mean = self.mean_linear(x)
 
-        log_std = self.log_std_linear(x)
-        log_std = torch.clamp(log_std, min=self.log_std_min, max=self.log_std_max)
+        log_std = torch.tanh(self.log_std_linear(x))
+        log_std = self.log_std_min + 0.5 *(self.log_std_max -self.log_std_min) * (log_std + 1) 
         return mean, log_std
 
     def get_action(self, state):
@@ -113,14 +115,18 @@ class PolicyNetwork(nn.Module):
         std = log_std.exp()
 
         normal = Normal(mean, std)
-        #x_t = normal.rsample()
-        dist = Normal(0,1)
-        e = dist.sample().to(device)
-        u = mean + e * std
-        y_t = torch.tanh(u)
+        pi = normal.rsample()
+
+        log_pi_1 = normal.log_prob(pi).sum(dim=-1, keepdim=True)
         
-        logp = normal.log_prob(u).sum(dim=-1, keepdim=True) - torch.log(1 - y_t ** 2 + 1e-6).sum(dim=-1, keepdim=True)                
-        return y_t.cpu().data.numpy(), logp
+        mu = torch.tanh(mean)
+        pi = torch.tanh(pi)    
+
+        log_pi_2 = torch.sum(torch.log(1-pi.pow(2) + 1e-6), dim=-1, keepdim=True)
+
+        log_pi = log_pi_1 - log_pi_2
+            
+        return mu.cpu().data.numpy(), pi, log_pi
 
 def hard_update(target, origin):
     for target_param, param in zip(target.parameters(), origin.parameters()):
@@ -134,22 +140,25 @@ def update(data, q1, q1_optim, q2, q2_optim, q1_target, q2_target, policy, polic
     state, action, next_state, reward, done = data
 
     d = done.astype(int)
-    d = torch.cuda.FloatTensor(d)
+    d = torch.cuda.FloatTensor(d).unsqueeze(dim=1)
 
     q1_value = q1(state, action)
     q2_value = q2(state, action)
     
     with torch.no_grad():
-        a2, logp_a2 = policy.get_action(next_state)
+        _, a2, logp_a2 = policy.get_action(next_state)
 
         q1_target_value = q1_target(next_state, a2)
         q2_target_value = q2_target(next_state, a2)
         min_q_target = torch.min(q1_target_value, q2_target_value)
 
-        backup = torch.cuda.FloatTensor(reward) + gamma * (1-d) * (min_q_target - alpha * logp_a2)
+        reward_tensor = torch.cuda.FloatTensor(reward).unsqueeze(dim=1)
+        backup = reward_tensor + gamma * (1-d) * (min_q_target - alpha * logp_a2)
 
-    loss_q1 = ((q1_value - backup)**2).mean()
-    loss_q2 = ((q2_value - backup)**2).mean()
+    #loss_q1 = ((q1_value - backup)**2).mean()
+    #loss_q2 = ((q2_value - backup)**2).mean()
+    loss_q1 = F.mse_loss(q1_value, backup)
+    loss_q2 = F.mse_loss(q2_value, backup)
     
     writer.add_scalar('loss/q1', loss_q1, total_step)
     writer.add_scalar('loss/q2', loss_q2, total_step)
@@ -167,7 +176,7 @@ def update(data, q1, q1_optim, q2, q2_optim, q1_target, q2_target, policy, polic
 
     #### Q update End, Policy update Start
 
-    pi, logp_pi = policy.get_action(state)    
+    _, pi, logp_pi = policy.get_action(state)    
     q1_pi = q1(state, pi)
     q2_pi = q2(state, pi)
     q_pi = torch.min(q1_pi, q2_pi)
@@ -175,17 +184,17 @@ def update(data, q1, q1_optim, q2, q2_optim, q1_target, q2_target, policy, polic
     loss_pi = (alpha * logp_pi - q_pi).mean()
     writer.add_scalar('loss/pi', loss_pi, total_step)
 
-    print('loss q1 {0} | q2 {1} | pi {2}'.format(loss_q1, loss_q2, loss_pi))
+    #print('loss q1 {0} | q2 {1} | pi {2}'.format(loss_q1, loss_q2, loss_pi))
     policy_optim.zero_grad()
     loss_pi.backward()
     policy_optim.step()    
 
 def main():
-    #env = gym.make('Aidinvi_standing-v0', is_render = args.render, )    
-    env = gym.make('Pendulum-v0')
+    env = gym.make('Aidinvi_standing-v0', is_render = args.render, )    
+    #env = gym.make('Pendulum-v0')
     
     action_dim = env.action_space.shape[0]
-    state_dim = env.observation_space.shape[0]
+    state_dim = env.observation_space.shape[0] + 6
     hidden_dim = 256
     
     # Q_function and Target_Q_function
@@ -222,7 +231,7 @@ def main():
             if total_step < minimum_buffer_size:
                 action = env.action_space.sample()
             else:
-                action, _ = policy.get_action(state)
+                action, _,_ = policy.get_action(state)
 
             next_state, reward, done, _ = env.step(action)
             
