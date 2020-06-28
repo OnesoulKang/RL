@@ -259,13 +259,11 @@ def main():
                             #'critic_optimizer_state_dict':critic.optimizer.state_dict(),
                 }, model_save)                
 
-def play():
-    pass
-    '''
+def play():    
     if args.load_trained_model == None:
         print("* * * * * Enter a model score * * * * *")
         quit()
-    elif not os.path.isfile(model_path + '/ckpt_'+str(args.load_trained_model)+'_pth.tar'):
+    elif not os.path.isfile(model_path + '/ckpt_epi_'+str(args.load_trained_model)+'_pth.tar'):
         print("* * * * * File not exist * * * * *")
         quit()
     
@@ -276,10 +274,10 @@ def play():
     hidden_dim = 256
 
     policy_net = PolicyNetwork(state_dim, action_dim, hidden_dim).to(device)
-    load_model = '/ckpt_'+str(args.load_trained_model)+'_pth.tar'
+    load_model = '/ckpt_epi_'+str(args.load_trained_model)+'_pth.tar'
     checkpoint = torch.load(model_path+load_model)
 
-    policy_net.load_state_dict(checkpoint['policy_net_state_dict'])
+    policy_net.load_state_dict(checkpoint['actor_state_dict'])
     control_time = args.control_time
     while True:
         state = env.reset(epoch=0, play=True)
@@ -290,7 +288,7 @@ def play():
 
         while not done:
             step_start = time.time()
-            action = policy_net.get_action(state)
+            action, _, _ = policy_net.get_action(state)
             next_state, reward, done, _ = env.step(action)
             step += 1
             state = next_state.tolist()
@@ -302,7 +300,7 @@ def play():
 
             if done:                  
                 print('step : {0} | score : {1} | time : {2} s'.format(step, episode_reward, time.time()-start_time))            
-        '''
+        
 
 if __name__ == '__main__':
     torch.manual_seed(0)
