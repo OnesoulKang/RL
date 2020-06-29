@@ -34,7 +34,6 @@ if not os.path.isdir(current_path+"/saved_model/SAC"):
     os.makedirs(current_path+'/saved_model/SAC')    
 
 model_path = current_path+'/saved_model/SAC'
-writer = SummaryWriter(current_path+'/logdir/SAC')
 
 gamma = 0.99
 lr = 0.0003
@@ -82,7 +81,7 @@ class QNetwork(nn.Module):
         return x
 
 class PolicyNetwork(nn.Module):
-    def __init__(self, num_inputs, num_actions, hidden_size, init_w=1e-3, log_std_min=-20, log_std_max=2):
+    def __init__(self, num_inputs, num_actions, hidden_size, init_w=1e-3, log_std_min=-5, log_std_max=0.1):
         super(PolicyNetwork, self).__init__()
 
         self.log_std_min = log_std_min
@@ -136,7 +135,7 @@ def soft_update(target, origin, tau):
     for target_param, param in zip(target.parameters(), origin.parameters()):
         target_param.data.copy_(target_param.data * (1.0 - tau) + param.data * tau)
 
-def update(data, q1, q1_optim, q2, q2_optim, q1_target, q2_target, policy, policy_optim, total_step):
+def update(data, q1, q1_optim, q2, q2_optim, q1_target, q2_target, policy, policy_optim, total_step, writer):
     state, action, next_state, reward, done = data
 
     d = done.astype(int)
@@ -191,6 +190,7 @@ def update(data, q1, q1_optim, q2, q2_optim, q1_target, q2_target, policy, polic
 
 def main():
     env = gym.make('Aidinvi_standing-v0', is_render = args.render, )    
+    writer = SummaryWriter(current_path+'/logdir/SAC')
     #env = gym.make('Pendulum-v0')
     
     action_dim = env.action_space.shape[0]
@@ -220,7 +220,7 @@ def main():
     update_every = 2
     batch_size = 256
     
-    buffer_size = 100000
+    buffer_size = 500000
     buffer = ReplayBuffer(buffer_size)
 
     for episode_number in range(max_episode):
@@ -243,7 +243,7 @@ def main():
 
             if (total_step >= minimum_buffer_size and total_step%update_every == 0):                
                 batch = buffer.sample(batch_size)
-                update(batch, q1, q1_optim, q2, q2_optim, q1_target, q2_target, policy, policy_optim, total_step)
+                update(batch, q1, q1_optim, q2, q2_optim, q1_target, q2_target, policy, policy_optim, total_step, writer)
         
         print('#EP {0} | episode_step {1} | reward {2} | total_step {3}'.format(episode_number, step, episode_reward, total_step))
         
