@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--play', default=False, action="store_true")
 parser.add_argument('--render', default=False, action="store_true")
 parser.add_argument('--load_trained_model', type=int, default=None)
+parser.add_argument('--load_best_model', type=int, default=None)
 parser.add_argument('--control_time', type=float, default=0.01)
 args = parser.parse_args()
 
@@ -306,11 +307,17 @@ def main():
                 }, model_save)                
 
 def play():    
-    if args.load_trained_model == None:
-        print("* * * * * Enter a model score * * * * *")
-        quit()
-    elif not os.path.isfile(model_path + '/ckpt_epi_'+str(args.load_trained_model)+'_pth.tar'):
-        print("* * * * * File not exist * * * * *")
+    if (not args.load_best_model == None) or (not args.load_trained_model == None):
+        if not args.load_best_model == None:
+            load_model = '/ckpt_'+str(args.load_best_model)+'_pth.tar'
+        else:
+            load_model = '/ckpt_train_'+str(args.load_trained_model)+'_pth.tar'
+        
+        if not os.path.isfile(model_path+load_model):
+            print('!!!File is not exist!!!')
+            quit()
+    else:
+        print('* * * Enter model or best score * * *')
         quit()
     
     env = gym.make('Aidinvi_standing-v0', is_render = True, )
@@ -320,8 +327,7 @@ def play():
     state_dim = env.observation_space.shape[0] + 6
     hidden_dim = 256
 
-    policy_net = PolicyNetwork(state_dim, action_dim, hidden_dim).to(device)
-    load_model = '/ckpt_epi_'+str(args.load_trained_model)+'_pth.tar'
+    policy_net = PolicyNetwork(state_dim, action_dim, hidden_dim).to(device)    
     checkpoint = torch.load(model_path+load_model)
 
     policy_net.load_state_dict(checkpoint['actor_state_dict'])
