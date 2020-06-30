@@ -272,7 +272,7 @@ def main():
             writer.add_scalar('value/reward', episode_reward, episode_number)     
 
             if best_score == None:
-                model_save = os.path.join(model_path, 'ckpt_'+str(episode_number)+'_pth.tar')    
+                model_save = os.path.join(model_path, 'ckpt_'+str(int(episode_reward))+'_pth.tar')    
                 torch.save({
                             'actor_state_dict':policy.state_dict(),
                             'q1_state_dict':q1.state_dict(),
@@ -283,7 +283,7 @@ def main():
                 }, model_save)                
                 best_score = episode_reward
             elif episode_reward>best_score:
-                model_save = os.path.join(model_path, 'ckpt_'+str(episode_reward)+'_pth.tar')    
+                model_save = os.path.join(model_path, 'ckpt_'+str(int(episode_reward))+'_pth.tar')    
                 torch.save({
                             'actor_state_dict':policy.state_dict(),
                             'q1_state_dict':q1.state_dict(),
