@@ -25,8 +25,12 @@ args = parser.parse_args()
 use_cuda = torch.cuda.is_available()
 device = torch.device('cuda' if use_cuda else 'cpu')
 
+gamma = 0.99
+lr = 0.0002
+tau = 0.005
+
 current_path = os.path.dirname(os.path.abspath(__file__))
-folder_name = '/SAC/lr_0.0001'
+folder_name = '/SAC/lr_'+str(lr)
 model_path = current_path+'/saved_model'+folder_name
 log_path = current_path+'/logdir'+folder_name
 
@@ -35,10 +39,6 @@ if not os.path.isdir(log_path):
 
 if not os.path.isdir(model_path):
     os.makedirs(model_path)
-
-gamma = 0.99
-lr = 0.00015
-tau = 0.005
 
 class ReplayBuffer:
     def __init__(self, capacity):
@@ -206,7 +206,7 @@ def main():
     writer = SummaryWriter(log_path)
 
     action_dim = env.action_space.shape[0]
-    state_dim = env.observation_space.shape[0] #+ 6
+    state_dim = env.observation_space.shape[0] + 6
     hidden_dim = 256
     
     # Q_function and Target_Q_function
@@ -229,13 +229,14 @@ def main():
     total_step = 0      
     max_episode = 10000
     minimum_buffer_size=5000
-    update_every = 2
+    update_every = 1
     batch_size = 256
     alpha = 0.5
     
     buffer_size = 100000
     buffer = ReplayBuffer(buffer_size)
 
+    best_score = None
     ### auto temp ###
     target_entropy = -np.prod((action_dim,)).item()
     log_alpha = torch.zeros(1, requires_grad=True, device=device)
@@ -269,6 +270,29 @@ def main():
         
         if total_step>minimum_buffer_size:
             writer.add_scalar('value/reward', episode_reward, episode_number)     
+
+            if best_score == None:
+                model_save = os.path.join(model_path, 'ckpt_'+str(episode_number)+'_pth.tar')    
+                torch.save({
+                            'actor_state_dict':policy.state_dict(),
+                            'q1_state_dict':q1.state_dict(),
+                            'q2_state_dict':q2.state_dict(),
+                            'actor_optimizer_state_dict':policy_optim.state_dict(),
+                            'q1_optimizer_state_dict':q1_optim.state_dict(),
+                            'q2_optimizer_state_dict':q2_optim.state_dict(),
+                }, model_save)                
+                best_score = episode_reward
+            elif episode_reward>best_score:
+                model_save = os.path.join(model_path, 'ckpt_'+str(episode_reward)+'_pth.tar')    
+                torch.save({
+                            'actor_state_dict':policy.state_dict(),
+                            'q1_state_dict':q1.state_dict(),
+                            'q2_state_dict':q2.state_dict(),
+                            'actor_optimizer_state_dict':policy_optim.state_dict(),
+                            'q1_optimizer_state_dict':q1_optim.state_dict(),
+                            'q2_optimizer_state_dict':q2_optim.state_dict(),
+                }, model_save)                
+                best_score = episode_reward
 
             if episode_number%100==0:
                 model_save = os.path.join(model_path, 'ckpt_epi_'+str(episode_number)+'_pth.tar')    
