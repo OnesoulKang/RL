@@ -37,7 +37,7 @@ if not os.path.isdir(model_path):
     os.makedirs(model_path)
 
 gamma = 0.99
-lr = 0.0001
+lr = 0.00015
 tau = 0.005
 
 class ReplayBuffer:
@@ -206,7 +206,7 @@ def main():
     writer = SummaryWriter(log_path)
 
     action_dim = env.action_space.shape[0]
-    state_dim = env.observation_space.shape[0] + 6
+    state_dim = env.observation_space.shape[0] #+ 6
     hidden_dim = 256
     
     # Q_function and Target_Q_function
@@ -290,6 +290,7 @@ def play():
         quit()
     
     env = gym.make('Aidinvi_standing-v0', is_render = True, )
+    #env = gym.make('Pendulum-v0')
     
     action_dim = env.action_space.shape[0]
     state_dim = env.observation_space.shape[0] + 6
@@ -303,12 +304,14 @@ def play():
     control_time = args.control_time
     while True:
         state = env.reset(epoch=0, play=True)
+        #state = env.reset()
         start_time=time.time()
         done = False
         episode_reward = 0
         step = 0
 
         while not done:
+            #env.render()
             step_start = time.time()
             action, _, _ = policy_net.get_action(state)
             next_state, reward, done, _ = env.step(action)
