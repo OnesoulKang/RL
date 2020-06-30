@@ -26,17 +26,18 @@ use_cuda = torch.cuda.is_available()
 device = torch.device('cuda' if use_cuda else 'cpu')
 
 current_path = os.path.dirname(os.path.abspath(__file__))
+folder_name = '/SAC/lr_0.0001'
+model_path = current_path+'/saved_model'+folder_name
+log_path = current_path+'/logdir'+folder_name
 
-if not os.path.isdir(current_path+"/logdir/SAC"):
-    os.makedirs(current_path+'/logdir/SAC')
+if not os.path.isdir(log_path):
+    os.makedirs(log_path)
 
-if not os.path.isdir(current_path+"/saved_model/SAC"):
-    os.makedirs(current_path+'/saved_model/SAC')    
-
-model_path = current_path+'/saved_model/SAC'
+if not os.path.isdir(model_path):
+    os.makedirs(model_path)
 
 gamma = 0.99
-lr = 0.0003
+lr = 0.0001
 tau = 0.005
 
 class ReplayBuffer:
@@ -74,8 +75,8 @@ class QNetwork(nn.Module):
         state = torch.cuda.FloatTensor(state)
         action = torch.cuda.FloatTensor(action)
         x = torch.cat([state, action], 1)
-        x = torch.relu(self.linear1(x))
-        x = torch.relu(self.linear2(x))
+        x = torch.tanh(self.linear1(x))
+        x = torch.tanh(self.linear2(x))
         x = self.linear3(x)
         return x
 
@@ -98,8 +99,8 @@ class PolicyNetwork(nn.Module):
         #self.log_std_linear.bias.data.uniform_(-init_w, init_w)
 
     def forward(self, state):
-        x = torch.relu(self.linear1(state))
-        x = torch.relu(self.linear2(x))
+        x = torch.tanh(self.linear1(state))
+        x = torch.tanh(self.linear2(x))
         #mean = torch.relu(self.mean_linear(x))
         mean = self.mean_linear(x)
 
@@ -202,7 +203,7 @@ def update(data, q1, q1_optim, q2, q2_optim, q1_target, q2_target, policy, polic
 def main():
     env = gym.make('Aidinvi_standing-v0', is_render = args.render, )    
     #env = gym.make('Pendulum-v0')
-    writer = SummaryWriter(current_path+'/logdir/SAC')
+    writer = SummaryWriter(log_path)
 
     action_dim = env.action_space.shape[0]
     state_dim = env.observation_space.shape[0] + 6
@@ -248,7 +249,8 @@ def main():
             if total_step < minimum_buffer_size:
                 action = env.action_space.sample()
             else:
-                action, _,_ = policy.get_action(state)
+                _, action,_ = policy.get_action(state)
+                action = action.cpu().data.numpy()
 
             next_state, reward, done, _ = env.step(action)
             
@@ -272,9 +274,11 @@ def main():
                 model_save = os.path.join(model_path, 'ckpt_epi_'+str(episode_number)+'_pth.tar')    
                 torch.save({
                             'actor_state_dict':policy.state_dict(),
-                            #'critic_state_dict':critic.state_dict(),
-                            #'actor_optimizer_state_dict':actor.optimizer.state_dict(),
-                            #'critic_optimizer_state_dict':critic.optimizer.state_dict(),
+                            'q1_state_dict':q1.state_dict(),
+                            'q2_state_dict':q2.state_dict(),
+                            'actor_optimizer_state_dict':policy_optim.state_dict(),
+                            'q1_optimizer_state_dict':q1_optim.state_dict(),
+                            'q2_optimizer_state_dict':q2_optim.state_dict(),
                 }, model_save)                
 
 def play():    
