@@ -155,7 +155,7 @@ def main():
     while not done:                
         env.render()
         h_in = h_out
-        a, prob, h_out = model.pi(torch.from_numpy(s).float().to(devO), h_in)
+        a, prob, h_out = model.pi(torch.from_numpy(s).float().to(dev), h_in)
         a = np.array([a.item()])
         a = np.clip(a, -2, 2)
         # prob = prob.view(-1)
