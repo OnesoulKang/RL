@@ -9,6 +9,7 @@ from torchsummary import summary as summary_
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 #Hyperparameters
 learning_rate = 0.0001
@@ -18,27 +19,32 @@ eps_clip      = 0.1
 K_epoch       = 5
 T_horizon     = 20
 dev = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+file_path = os.path.dirname(os.path.abspath(__file__))
+path = os.path.join(file_path, 'saved_model')
+
 class PPO(nn.Module):
     def __init__(self, obs_dim, action_dim):
         super(PPO, self).__init__()
         self.data = []
         self.action_dim = action_dim
         
-        self.fc1   = nn.Linear(obs_dim,128)
-        self.lstm  = nn.LSTM(128,32) # input_size = 64, hidden_size=32, batch_first=False
+        self.fc1   = nn.Linear(obs_dim,64)
+        self.lstm  = nn.LSTM(64,32) # input_size = 64, hidden_size=32, batch_first=False
         self.fc_pi = nn.Linear(32,action_dim)
         self.fc_v  = nn.Linear(32,1)
 
-        self.log_std = np.ones(action_dim, dtype=np.float32)
+        self.log_std = np.zeros(action_dim, dtype=np.float32)
         self.log_std = torch.nn.Parameter(torch.Tensor(self.log_std).to(dev))
 
         self.optimizer = optim.Adam(self.parameters(), lr=learning_rate)
 
     def pi(self, x, hidden):
         x = F.relu(self.fc1(x))
-        x = x.view(-1, 1, 128) # seq_len, batch_size, feature_size
+        x = x.view(-1, 1, 64) # seq_len, batch_size, feature_size
         x, lstm_hidden = self.lstm(x, hidden)
         x = torch.tanh(self.fc_pi(x))
+
+        # sigma = torch.FloatTensor([0]).expand_as(x).to(dev)
 
         p_action = torch.distributions.Normal(x, self.log_std.exp())
         action = p_action.sample()
@@ -50,7 +56,7 @@ class PPO(nn.Module):
     
     def v(self, x, hidden):
         x = F.relu(self.fc1(x))
-        x = x.view(-1, 1, 128)
+        x = x.view(-1, 1, 64)
         x, lstm_hidden = self.lstm(x, hidden)
         v = self.fc_v(x)
         return v
@@ -102,10 +108,17 @@ class PPO(nn.Module):
             _, pi, _ = self.pi(s, first_hidden)
             pi = pi.squeeze(1)
             ratio = torch.exp(pi - prob_a)  # a/b == log(exp(a)-exp(b))
+            assert pi.size() == prob_a.size(), f'pi {pi.size()}, prob_a {prob_a.size()}'
 
             surr1 = ratio * advantage
             surr2 = torch.clamp(ratio, 1-eps_clip, 1+eps_clip) * advantage
-            loss = -torch.min(surr1, surr2) + F.smooth_l1_loss(v_s, td_target.detach())
+            assert ratio.size() == advantage.size(), '{}, {}'.format(ratio.size(), advantage.size())
+
+            loss1 = -torch.min(surr1, surr2).mean()
+            loss2 = F.smooth_l1_loss(v_s, r.detach()) #td_target.detach())
+            loss = loss1 + loss2
+
+            assert loss1.size() == loss2.size(), f'loss1 {loss1.size()}, loss2 {loss2.size()}'
 
             self.optimizer.zero_grad()
             loss.mean().backward(retain_graph=True)
@@ -133,7 +146,7 @@ def main():
                 #a = np.array([a.item()])
                 a = a.item()
                 # a = np.clip(a, -2, 2)
-                # prob = prob.view(-1)
+                prob = prob.view(-1)
                 # m = Categorical(prob)
                 # a = m.sample().item()
                 s_prime, r, done, info = env.step(np.array([2*a]))
@@ -152,7 +165,14 @@ def main():
             reward_record[0].append(n_epi)
             reward_record[1].append(score/print_interval)
             score = 0.0
-    
+
+        if n_epi%200==0 and n_epi!=0:
+            model_save = os.path.join(path, 'ckpt_'+str(int(n_epi))+'_pth.tar')    
+            torch.save({
+                        'model_state_dict':model.state_dict(),                        
+                        'model_optimizer_state_dict':model.optimizer.state_dict(),                        
+            }, model_save) 
+
     h_out = (torch.zeros([1, 1, 32], dtype=torch.float, device=dev), torch.zeros([1, 1, 32], dtype=torch.float, device=dev)) # h_0, c_0 for LSTM
     s = env.reset()
     done = False
