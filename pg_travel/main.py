@@ -4,10 +4,20 @@ import torch.optim as optim
 import gym
 from model import Actor, Critic
 from collections import deque
-from algo.vanila_pg import train_model
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--algo', type=str, default='ppo')
+args = parser.parse_args()
+
+if args.algo == 'pg':
+    from algo.vanila_pg import train_model
+elif args.algo == 'ppo':
+    from algo.ppo_gae import train_model
+
 import matplotlib.pyplot as plt
 
-lr = 0.0001
+lr = 0.0003
 
 
 def get_actions(mu, std):

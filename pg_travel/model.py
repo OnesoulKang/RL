@@ -17,10 +17,10 @@ class Actor(nn.Module):
         self.fc3.bias.data.mul_(0.0)
 
     def forward(self, x):
-        x = F.tanh(self.fc1(x))
-        x = F.tanh(self.fc2(x))
-        mu = self.fc3(x) * 2
-        logstd = torch.ones_like(mu) * 0.5
+        x = torch.tanh(self.fc1(x))
+        x = torch.tanh(self.fc2(x))
+        mu = self.fc3(x)
+        logstd = torch.zeros_like(mu)
         std = torch.exp(logstd)
         return mu, std
 
@@ -35,7 +35,7 @@ class Critic(nn.Module):
         self.fc3.bias.data.mul_(0.0)
 
     def forward(self, x):
-        x = F.tanh(self.fc1(x))
-        x = F.tanh(self.fc2(x))
+        x = torch.tanh(self.fc1(x))
+        x = torch.tanh(self.fc2(x))
         v = self.fc3(x)
         return v
