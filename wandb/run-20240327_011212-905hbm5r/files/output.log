@@ -1,0 +1,247 @@
+
+[34m[1mwandb[39m[22m: [33mWARNING[39m Calling wandb.run.save without any arguments is deprecated.Changes to attributes are automatically persisted.
+                                Iterations 20/1000 (4888 steps/sec)
+avg score : 0.6, optmization step: 840
+Avg. A_Loss -0.25106
+Avg. C_Loss 0.01722
+Avg. I_Loss 0.43448
+                                Iterations 40/1000 (5266 steps/sec)
+avg score : 0.7, optmization step: 1640
+Avg. A_Loss -1.53779
+Avg. C_Loss 0.03586
+Avg. I_Loss 0.31899
+                                Iterations 60/1000 (5355 steps/sec)
+avg score : 1.6, optmization step: 2440
+Avg. A_Loss -1.58387
+Avg. C_Loss 0.07206
+Avg. I_Loss 0.31952
+                                Iterations 80/1000 (5342 steps/sec)
+avg score : 3.0, optmization step: 3240
+Avg. A_Loss -0.93833
+Avg. C_Loss 0.11006
+Avg. I_Loss 0.33470
+                                Iterations 100/1000 (5297 steps/sec)
+avg score : 0.6, optmization step: 4040
+Avg. A_Loss -0.61228
+Avg. C_Loss 0.13828
+Avg. I_Loss 0.31508
+                                Iterations 120/1000 (5201 steps/sec)
+avg score : 11.7, optmization step: 4840
+Avg. A_Loss -0.32953
+Avg. C_Loss 0.17133
+Avg. I_Loss 0.27631
+                                Iterations 140/1000 (5262 steps/sec)
+avg score : 12.4, optmization step: 5640
+Avg. A_Loss 0.15515
+Avg. C_Loss 0.19809
+Avg. I_Loss 0.24779
+                                Iterations 160/1000 (5341 steps/sec)
+avg score : 15.8, optmization step: 6440
+Avg. A_Loss 0.42955
+Avg. C_Loss 0.26576
+Avg. I_Loss 0.22547
+                                Iterations 180/1000 (5387 steps/sec)
+avg score : 3.3, optmization step: 7240
+Avg. A_Loss 1.92619
+Avg. C_Loss 0.30515
+Avg. I_Loss 0.24494
+                                Iterations 200/1000 (5390 steps/sec)
+avg score : 2.5, optmization step: 8040
+Avg. A_Loss 1.60253
+Avg. C_Loss 0.35553
+Avg. I_Loss 0.25699
+                                Iterations 220/1000 (5401 steps/sec)
+avg score : 13.8, optmization step: 8840
+Avg. A_Loss 1.68193
+Avg. C_Loss 0.41484
+Avg. I_Loss 0.21506
+                                Iterations 240/1000 (5340 steps/sec)
+avg score : 7.1, optmization step: 9640
+Avg. A_Loss 2.10902
+Avg. C_Loss 0.36923
+Avg. I_Loss 0.19949
+                                Iterations 260/1000 (5342 steps/sec)
+avg score : 12.9, optmization step: 10440
+Avg. A_Loss 1.99127
+Avg. C_Loss 0.30526
+Avg. I_Loss 0.19570
+                                Iterations 280/1000 (5341 steps/sec)
+avg score : 3.8, optmization step: 11240
+Avg. A_Loss 1.96813
+Avg. C_Loss 0.33719
+Avg. I_Loss 0.18891
+                                Iterations 300/1000 (5330 steps/sec)
+avg score : 14.5, optmization step: 12040
+Avg. A_Loss 1.86838
+Avg. C_Loss 0.26879
+Avg. I_Loss 0.15834
+                                Iterations 320/1000 (5303 steps/sec)
+avg score : 9.3, optmization step: 12840
+Avg. A_Loss 1.72281
+Avg. C_Loss 0.32698
+Avg. I_Loss 0.18892
+                                Iterations 340/1000 (5340 steps/sec)
+avg score : 6.3, optmization step: 13640
+Avg. A_Loss 1.61151
+Avg. C_Loss 0.28892
+Avg. I_Loss 0.19037
+                                Iterations 360/1000 (5380 steps/sec)
+avg score : 11.6, optmization step: 14440
+Avg. A_Loss 1.16596
+Avg. C_Loss 0.33477
+Avg. I_Loss 0.23084
+                                Iterations 380/1000 (5365 steps/sec)
+avg score : 20.5, optmization step: 15240
+Avg. A_Loss 0.81945
+Avg. C_Loss 0.23173
+Avg. I_Loss 0.23187
+                                Iterations 400/1000 (5420 steps/sec)
+avg score : 0.4, optmization step: 16040
+Avg. A_Loss 0.83240
+Avg. C_Loss 0.21577
+Avg. I_Loss 0.22461
+                                Iterations 420/1000 (5403 steps/sec)
+avg score : 27.6, optmization step: 16840
+Avg. A_Loss 0.58258
+Avg. C_Loss 0.17750
+Avg. I_Loss 0.22160
+                                Iterations 440/1000 (5405 steps/sec)
+avg score : 9.2, optmization step: 17640
+Avg. A_Loss 0.07832
+Avg. C_Loss 0.11527
+Avg. I_Loss 0.21924
+                                Iterations 460/1000 (5409 steps/sec)
+avg score : 4.3, optmization step: 18440
+Avg. A_Loss -0.08444
+Avg. C_Loss 0.10469
+Avg. I_Loss 0.22920
+                                Iterations 480/1000 (5433 steps/sec)
+avg score : 4.8, optmization step: 19240
+Avg. A_Loss -0.00674
+Avg. C_Loss 0.06859
+Avg. I_Loss 0.19670
+                                Iterations 500/1000 (5385 steps/sec)
+avg score : 16.4, optmization step: 20040
+Avg. A_Loss 0.09552
+Avg. C_Loss 0.06125
+Avg. I_Loss 0.21511
+                                Iterations 520/1000 (5362 steps/sec)
+avg score : 1.8, optmization step: 20840
+Avg. A_Loss -0.41058
+Avg. C_Loss 0.06304
+Avg. I_Loss 0.22803
+                                Iterations 540/1000 (5359 steps/sec)
+avg score : 6.9, optmization step: 21640
+Avg. A_Loss -0.29430
+Avg. C_Loss 0.04875
+Avg. I_Loss 0.21004
+                                Iterations 560/1000 (5415 steps/sec)
+avg score : 13.0, optmization step: 22440
+Avg. A_Loss -0.24104
+Avg. C_Loss 0.06432
+Avg. I_Loss 0.20591
+                                Iterations 580/1000 (5379 steps/sec)
+avg score : 11.2, optmization step: 23240
+Avg. A_Loss -0.27887
+Avg. C_Loss 0.06037
+Avg. I_Loss 0.23200
+                                Iterations 600/1000 (5387 steps/sec)
+avg score : 2.8, optmization step: 24040
+Avg. A_Loss -0.38263
+Avg. C_Loss 0.05629
+Avg. I_Loss 0.23392
+                                Iterations 620/1000 (5384 steps/sec)
+avg score : 3.5, optmization step: 24840
+Avg. A_Loss 0.08458
+Avg. C_Loss 0.06223
+Avg. I_Loss 0.20586
+                                Iterations 640/1000 (5399 steps/sec)
+avg score : 12.1, optmization step: 25640
+Avg. A_Loss 0.04717
+Avg. C_Loss 0.05918
+Avg. I_Loss 0.19040
+                                Iterations 660/1000 (5382 steps/sec)
+avg score : 11.7, optmization step: 26440
+Avg. A_Loss -0.12277
+Avg. C_Loss 0.05182
+Avg. I_Loss 0.22340
+                                Iterations 680/1000 (5399 steps/sec)
+avg score : 3.9, optmization step: 27240
+Avg. A_Loss -0.26589
+Avg. C_Loss 0.05081
+Avg. I_Loss 0.22020
+                                Iterations 700/1000 (5394 steps/sec)
+avg score : 15.5, optmization step: 28040
+Avg. A_Loss -0.04955
+Avg. C_Loss 0.04919
+Avg. I_Loss 0.22066
+                                Iterations 720/1000 (5390 steps/sec)
+avg score : 4.7, optmization step: 28840
+Avg. A_Loss -0.44691
+Avg. C_Loss 0.04416
+Avg. I_Loss 0.22485
+                                Iterations 740/1000 (5384 steps/sec)
+avg score : 3.7, optmization step: 29640
+Avg. A_Loss -0.25801
+Avg. C_Loss 0.03687
+Avg. I_Loss 0.22855
+                                Iterations 760/1000 (5391 steps/sec)
+avg score : 13.7, optmization step: 30440
+Avg. A_Loss -0.46910
+Avg. C_Loss 0.04930
+Avg. I_Loss 0.22454
+                                Iterations 780/1000 (5413 steps/sec)
+avg score : 4.0, optmization step: 31240
+Avg. A_Loss -0.32096
+Avg. C_Loss 0.05524
+Avg. I_Loss 0.23645
+                                Iterations 800/1000 (5421 steps/sec)
+avg score : 2.1, optmization step: 32040
+Avg. A_Loss -0.64633
+Avg. C_Loss 0.06375
+Avg. I_Loss 0.27802
+                                Iterations 820/1000 (5400 steps/sec)
+avg score : 2.7, optmization step: 32840
+Avg. A_Loss -0.35458
+Avg. C_Loss 0.06599
+Avg. I_Loss 0.27405
+                                Iterations 840/1000 (5424 steps/sec)
+avg score : 10.9, optmization step: 33640
+Avg. A_Loss -0.29593
+Avg. C_Loss 0.08392
+Avg. I_Loss 0.27757
+                                Iterations 860/1000 (5465 steps/sec)
+avg score : 163.4, optmization step: 34440
+Avg. A_Loss -0.55767
+Avg. C_Loss 0.06004
+Avg. I_Loss 0.28888
+                                Iterations 880/1000 (5433 steps/sec)
+avg score : 52.9, optmization step: 35240
+Avg. A_Loss -0.41501
+Avg. C_Loss 0.09814
+Avg. I_Loss 0.28554
+                                Iterations 900/1000 (5182 steps/sec)
+avg score : 9.2, optmization step: 36040
+Avg. A_Loss -0.32564
+Avg. C_Loss 0.09462
+Avg. I_Loss 0.29957
+                                Iterations 920/1000 (5273 steps/sec)
+avg score : 166.2, optmization step: 36840
+Avg. A_Loss -0.29526
+Avg. C_Loss 0.08285
+Avg. I_Loss 0.28518
+                                Iterations 940/1000 (5448 steps/sec)
+avg score : 68.4, optmization step: 37640
+Avg. A_Loss -0.27118
+Avg. C_Loss 0.10117
+Avg. I_Loss 0.28841
+                                Iterations 960/1000 (5433 steps/sec)
+avg score : 76.6, optmization step: 38440
+Avg. A_Loss -0.34192
+Avg. C_Loss 0.11975
+Avg. I_Loss 0.30750
+                                Iterations 980/1000 (5369 steps/sec)
+avg score : 8.8, optmization step: 39240
+Avg. A_Loss -0.46542
+Avg. C_Loss 0.13025
+Avg. I_Loss 0.31233
